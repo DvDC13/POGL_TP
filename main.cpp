@@ -5,6 +5,7 @@
 
 #include "Vbo.h"
 #include "Program.h"
+#include "Structures.h"
 
 MyGL::Program* program;
 unsigned int Vao;
@@ -14,6 +15,8 @@ bool initGlut(int argc, char** argv);
 bool initGlew();
 bool init_gl();
 bool init_shaders();
+bool init_objects();
+bool init_view();
 
 int main(int argc, char** argv)
 {
@@ -41,6 +44,20 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    if (!init_objects())
+    {
+        std::cerr << "ERROR::OBJECTS::INIT_FAILED" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    if (!init_view())
+    {
+        std::cerr << "ERROR::VIEW::INIT_FAILED" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    glutMainLoop();
+
     return EXIT_SUCCESS;
 }
 
@@ -48,6 +65,9 @@ void display()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindVertexArray(Vao);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
     glutSwapBuffers();
 }
 
@@ -75,8 +95,8 @@ bool init_gl()
 
 bool init_shaders()
 {
-    std::string vertex_shader_path = "shaders/VertexShader.glsl";
-    std::string fragment_shader_path = "shaders/FragmentShader.glsl";
+    std::string vertex_shader_path = "/home/david/Desktop/Image/POGL/POGL_TP/shaders/VertexShader.glsl";
+    std::string fragment_shader_path = "/home/david/Desktop/Image/POGL/POGL_TP/shaders/FragmentShader.glsl";
     program = MyGL::Program::make_program(vertex_shader_path, fragment_shader_path);
     if (!program)
     {
@@ -86,5 +106,29 @@ bool init_shaders()
 
     program->use();
 
+    return true;
+}
+
+bool init_objects()
+{
+    glGenVertexArrays(1, &Vao);
+    glBindVertexArray(Vao);
+
+    MyGL::Vbo vbo;
+    vbo.bind();
+
+    vbo.setData(vertices.data(), vertices.size() * sizeof(float), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(0);
+
+    vbo.unbind();
+
+    return true;
+}
+
+bool init_view()
+{
     return true;
 }

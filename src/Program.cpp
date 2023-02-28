@@ -15,8 +15,9 @@ namespace MyGL
     Program* Program::make_program(std::string& vertex_shader_path, std::string& fragment_shader_path)
     {
         Program* program = new Program();
-        unsigned int vertex_shader = program->compileShader(GL_VERTEX_SHADER, vertex_shader_path);
-        unsigned int fragment_shader = program->compileShader(GL_FRAGMENT_SHADER, fragment_shader_path);
+        Shaders shaders = program->storeShaders(vertex_shader_path, fragment_shader_path);
+        unsigned int vertex_shader = program->compileShader(GL_VERTEX_SHADER, shaders.vertex_shader_path);
+        unsigned int fragment_shader = program->compileShader(GL_FRAGMENT_SHADER, shaders.fragment_shader_path);
 
         glAttachShader(program->m_ProgramID, vertex_shader);
         glAttachShader(program->m_ProgramID, fragment_shader);
@@ -63,8 +64,8 @@ namespace MyGL
     {
         std::string vertex_shader_code;
         std::string fragment_shader_code;
-        std::ifstream vertex_shader_file(vertex_shader_path);
-        std::ifstream fragment_shader_file(fragment_shader_path);
+        std::ifstream vertex_shader_file;
+        std::ifstream fragment_shader_file;
 
         vertex_shader_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         fragment_shader_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -85,7 +86,7 @@ namespace MyGL
             vertex_shader_code = vertex_shader_stream.str();
             fragment_shader_code = fragment_shader_stream.str();
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
             std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
         }
