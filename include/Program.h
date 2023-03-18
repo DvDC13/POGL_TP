@@ -6,6 +6,10 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
+
+#include "Error.h"
+#include "Matrix4.h"
 
 namespace MyGL
 {
@@ -29,13 +33,17 @@ namespace MyGL
 
         inline unsigned int get_program_id() const { return m_ProgramID; }
 
+        void set_uniform_Mat4fv(const std::string& name, const Matrix4& matrix);
+
     private:
         Shaders storeShaders(std::string& vertex_shader_path, std::string& fragment_shader_path);
         bool is_shader_ready(unsigned int shader_id);
         char* get_shader_log(unsigned int shader_id);
         unsigned int compileShader(unsigned int type, const std::string& source);
+        int getUniformLocation(const std::string& name);
 
     private:
         unsigned int m_ProgramID;
+        std::unordered_map<std::string, int> m_UniformLocationCache;
     };
 }

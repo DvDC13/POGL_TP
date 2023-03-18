@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+#include "Error.h"
 #include "Vbo.h"
 #include "Program.h"
 #include "Structures.h"
@@ -64,23 +65,23 @@ int main(int argc, char** argv)
 void display()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindVertexArray(Vao);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); CHECK_GL_ERROR();
+    glBindVertexArray(Vao); CHECK_GL_ERROR();
+    glDrawArrays(GL_TRIANGLES, 0, 3); CHECK_GL_ERROR();
+    glBindVertexArray(0); CHECK_GL_ERROR();
     glutSwapBuffers();
 }
 
 bool initGlut(int argc, char** argv)
 {
-    glutInit(&argc, argv);
-    glutInitContextVersion(4, 5);
-    glutInitContextProfile(GLUT_CORE_PROFILE);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(1024, 1024);
-    glutInitWindowPosition(10, 10);
-    glutCreateWindow("Test OpenGL - POGL");
-    glutDisplayFunc(display);
+    glutInit(&argc, argv); CHECK_GL_ERROR();
+    glutInitContextVersion(4, 5); CHECK_GL_ERROR();
+    glutInitContextProfile(GLUT_CORE_PROFILE); CHECK_GL_ERROR();
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH); CHECK_GL_ERROR();
+    glutInitWindowSize(1024, 1024); CHECK_GL_ERROR();
+    glutInitWindowPosition(10, 10); CHECK_GL_ERROR();
+    glutCreateWindow("Test OpenGL - POGL - David Chemaly"); CHECK_GL_ERROR();
+    glutDisplayFunc(display); CHECK_GL_ERROR();
     return true;
 }
 
@@ -88,8 +89,9 @@ bool initGlew() { return glewInit() == GLEW_OK; }
 
 bool init_gl()
 {
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST); CHECK_GL_ERROR();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); CHECK_GL_ERROR();
+    glEnable(GL_CULL_FACE); CHECK_GL_ERROR();
     return true;
 }
 
@@ -111,17 +113,16 @@ bool init_shaders()
 
 bool init_objects()
 {
-    glGenVertexArrays(1, &Vao);
-    glBindVertexArray(Vao);
+    glGenVertexArrays(1, &Vao); CHECK_GL_ERROR();
+    glBindVertexArray(Vao); CHECK_GL_ERROR();
 
     MyGL::Vbo vbo;
     vbo.bind();
 
-    vbo.setData(vertices.data(), vertices.size() * sizeof(float), GL_STATIC_DRAW);
+    vbo.setData(vertices.data(), vertices.size() * sizeof(float), GL_STATIC_DRAW); CHECK_GL_ERROR();
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); CHECK_GL_ERROR();
+    glEnableVertexAttribArray(0); CHECK_GL_ERROR();
 
     vbo.unbind();
 
@@ -130,5 +131,13 @@ bool init_objects()
 
 bool init_view()
 {
+    // to ask teacher if I remove
+    MyGL::Matrix4 matrix = MyGL::Matrix4::Identity();
+    MyGL::look_at(matrix, 0, 0, 2, 0.5, 0.5, 0, 0, 1, 0);
+    program->set_uniform_Mat4fv("u_View", matrix);
+
+    MyGL::frustum(matrix, -3, 3, -3, 3, 1, 300);
+    program->set_uniform_Mat4fv("u_Projection", matrix);
+
     return true;
 }

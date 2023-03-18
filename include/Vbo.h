@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+#include "Error.h"
+
 namespace MyGL
 {
     class Vbo

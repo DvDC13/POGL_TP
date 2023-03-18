@@ -19,7 +19,7 @@ namespace MyGL
         {
             for (int j = 0; j < 4; j++)
             {
-                double sum = 0;
+                float sum = 0;
                 for (int k = 0; k < 4; k++)
                 {
                     sum += m_Matrix[i][k] * other.m_Matrix[k][j];
@@ -34,5 +34,10 @@ namespace MyGL
         Matrix4 matrix;
         for (int i = 0; i < 4; i++) matrix.m_Matrix[i][i] = 1;
         return matrix;
+    }
+
+    float *Matrix4::get_pointer() const
+    {
+        return (float*)m_Matrix;
     }
 }
