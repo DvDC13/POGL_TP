@@ -7,11 +7,6 @@ namespace MyGL
         m_ProgramID = glCreateProgram(); CHECK_GL_ERROR();
     }
 
-    Program::~Program()
-    {
-        glDeleteProgram(m_ProgramID); CHECK_GL_ERROR();
-    }
-
     Program* Program::make_program(std::string& vertex_shader_path, std::string& fragment_shader_path)
     {
         Program* program = new Program();
@@ -148,5 +143,10 @@ namespace MyGL
     {
         const GLfloat* data = matrix.get_pointer();
         glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, data); CHECK_GL_ERROR();
+    }
+
+    void Program::delete_program()
+    {
+        glDeleteProgram(m_ProgramID); CHECK_GL_ERROR();
     }
 }

@@ -23,8 +23,7 @@ namespace MyGL
         };
 
     public:
-        Program();
-        ~Program();
+        Program(); 
 
         static Program* make_program(std::string& vertex_shader_path, std::string& fragment_shader_path);
         char* get_log();
@@ -34,6 +33,8 @@ namespace MyGL
         inline unsigned int get_program_id() const { return m_ProgramID; }
 
         void set_uniform_Mat4fv(const std::string& name, const Matrix4& matrix);
+
+        void delete_program();
 
     private:
         Shaders storeShaders(std::string& vertex_shader_path, std::string& fragment_shader_path);
