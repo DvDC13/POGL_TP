@@ -64,10 +64,9 @@ int main(int argc, char** argv)
 
 void display()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); CHECK_GL_ERROR();
     glBindVertexArray(Vao); CHECK_GL_ERROR();
-    glDrawArrays(GL_TRIANGLES, 0, 3); CHECK_GL_ERROR();
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3); CHECK_GL_ERROR();
     glBindVertexArray(0); CHECK_GL_ERROR();
     glutSwapBuffers();
 }
@@ -92,6 +91,7 @@ bool init_gl()
     glEnable(GL_DEPTH_TEST); CHECK_GL_ERROR();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); CHECK_GL_ERROR();
     glEnable(GL_CULL_FACE); CHECK_GL_ERROR();
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); CHECK_GL_ERROR();
     return true;
 }
 
@@ -116,27 +116,25 @@ bool init_objects()
     glGenVertexArrays(1, &Vao); CHECK_GL_ERROR();
     glBindVertexArray(Vao); CHECK_GL_ERROR();
 
-    MyGL::Vbo vbo;
-    vbo.bind();
+    MyGL::Vbo Vbo;
+    Vbo.bind();
+    Vbo.setData(vertices.data(), vertices.size() * sizeof(float), GL_STATIC_DRAW); CHECK_GL_ERROR();
 
-    vbo.setData(vertices.data(), vertices.size() * sizeof(float), GL_STATIC_DRAW); CHECK_GL_ERROR();
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); CHECK_GL_ERROR();
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0); CHECK_GL_ERROR();
     glEnableVertexAttribArray(0); CHECK_GL_ERROR();
 
-    vbo.unbind();
+    Vbo.unbind();
 
     return true;
 }
 
 bool init_view()
 {
-    // to ask teacher if I remove
     MyGL::Matrix4 matrix = MyGL::Matrix4::Identity();
-    MyGL::look_at(matrix, 0, 0, 2, 0.5, 0.5, 0, 0, 1, 0);
+    MyGL::look_at(matrix, 0, 0, 5, 0, 0, 0, 0, 1, 0);
     program->set_uniform_Mat4fv("u_View", matrix);
 
-    MyGL::frustum(matrix, -3, 3, -3, 3, 1, 300);
+    MyGL::frustum(matrix, -1, 1, -1, 1, 1, 100);
     program->set_uniform_Mat4fv("u_Projection", matrix);
 
     return true;

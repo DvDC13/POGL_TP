@@ -19,9 +19,7 @@ namespace MyGL
 
     void Vbo::setData(const void* data, unsigned int size, unsigned int usage)
     {
-        bind();
         glBufferData(GL_ARRAY_BUFFER, size, data, usage); CHECK_GL_ERROR();
-        unbind();
     }
 
     void Vbo::destroy()
