@@ -7,6 +7,7 @@
 #include "Vao.h"
 #include "Program.h"
 #include "Structures.h"
+#include "Bunny_dec.h"
 
 MyGL::Program* program;
 MyGL::Vao* Vao;
@@ -71,7 +72,7 @@ void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); CHECK_GL_ERROR();
     Vao->bind();
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3); CHECK_GL_ERROR();
+    glDrawArrays(GL_TRIANGLES, 0, vertex_buffer_data_bunny.size() / 3); CHECK_GL_ERROR();
     Vao->unbind();
     glutSwapBuffers();
 }
@@ -118,22 +119,41 @@ bool init_shaders()
 
 bool init_objects()
 {
+    int max_vbo = 0;
+    int nb_vbo = 0;
+    int index = 0;
+
     Vao = new MyGL::Vao();
     Vao->bind();
 
-    MyGL::Vbo Vbo;
-    Vbo.bind();
-    Vbo.setData(vertices.data(), vertices.size() * sizeof(float), GL_STATIC_DRAW); CHECK_GL_ERROR();
+    GLint position = glGetAttribLocation(program->get_program_id(), "position"); CHECK_GL_ERROR();
+    GLint normalPosition = glGetAttribLocation(program->get_program_id(), "normal"); CHECK_GL_ERROR();
 
-    MyGL::Vbl Vbl;
-    Vbl.push<float>(3);
+    GLuint vbos[max_vbo];
 
-    Vao->addBuffer(Vbo, Vbl);
+    if (position != -1) nb_vbo++;
+    if (normalPosition != -1) nb_vbo++;
+
+    glGenBuffers(nb_vbo, vbos); CHECK_GL_ERROR();
+
+    if (position != -1)
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[index++]); CHECK_GL_ERROR();
+        glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data_bunny.size() * sizeof(float), vertex_buffer_data_bunny.data(), GL_STATIC_DRAW); CHECK_GL_ERROR();
+        glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, 0); CHECK_GL_ERROR();
+        glEnableVertexAttribArray(position); CHECK_GL_ERROR();
+    }
+
+    if (normalPosition != -1)
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[index++]); CHECK_GL_ERROR();
+        glBufferData(GL_ARRAY_BUFFER, normal_smooth_buffer_data_bunny.size() * sizeof(float), normal_smooth_buffer_data_bunny.data(), GL_STATIC_DRAW); CHECK_GL_ERROR();
+        glVertexAttribPointer(normalPosition, 3, GL_FLOAT, GL_FALSE, 0, 0); CHECK_GL_ERROR();
+        glEnableVertexAttribArray(normalPosition); CHECK_GL_ERROR();
+    }
 
     Vao->unbind();
-
-    Vbo.unbind();
-    Vbo.destroy();
+    
     return true;
 }
 
@@ -141,7 +161,7 @@ bool init_view()
 {
     MyGL::Matrix4 matrix = MyGL::Matrix4::Identity();
 
-    MyGL::look_at(matrix, 0, 0, 5, 0, 0, 0, 0, 1, 0);
+    MyGL::look_at(matrix, 0, 0.25, 1, 0, 0, 0, 0, 1, 0);
     program->set_uniform_Mat4fv("u_View", matrix);
 
     MyGL::frustum(matrix, -1, 1, -1, 1, 1, 100);

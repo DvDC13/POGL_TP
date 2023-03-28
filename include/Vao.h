@@ -34,15 +34,6 @@ namespace MyGL
         template<typename T>
         void push(unsigned int count);
 
-        /*template<>
-        void push<float>(unsigned int count);
-
-        template<>
-        void push<unsigned int>(unsigned int count);
-
-        template<>
-        void push<unsigned char>(unsigned int count);*/
-
         inline const std::vector<Vbe>& getVbes() const { return m_Vbes; }
         inline unsigned int getStride() const { return m_Stride; }
 

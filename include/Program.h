@@ -36,12 +36,13 @@ namespace MyGL
 
         void delete_program();
 
+        int getUniformLocation(const std::string& name);
+
     private:
         Shaders storeShaders(std::string& vertex_shader_path, std::string& fragment_shader_path);
         bool is_shader_ready(unsigned int shader_id);
         char* get_shader_log(unsigned int shader_id);
         unsigned int compileShader(unsigned int type, const std::string& source);
-        int getUniformLocation(const std::string& name);
 
     private:
         unsigned int m_ProgramID;
