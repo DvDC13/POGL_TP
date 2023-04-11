@@ -13,9 +13,12 @@ find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 
 add_library("${PROJECT_NAME}_lib" STATIC)
+add_library("${PROJECT_NAME}_lib_vendor" STATIC)
 target_include_directories("${PROJECT_NAME}_lib" PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories("${PROJECT_NAME}_lib_vendor" PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
 add_subdirectory(src)
+add_subdirectory(vendor)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} "${PROJECT_NAME}_lib" ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARY})
+target_link_libraries(${PROJECT_NAME} "${PROJECT_NAME}_lib" "${PROJECT_NAME}_lib_vendor" ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARY})

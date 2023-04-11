@@ -87,6 +87,7 @@ bool initGlut(int argc, char** argv)
     glutInitWindowPosition(10, 10); CHECK_GL_ERROR();
     glutCreateWindow("Test OpenGL - POGL - David Chemaly"); CHECK_GL_ERROR();
     glutDisplayFunc(display); CHECK_GL_ERROR();
+    glutReshapeFunc([](int w, int h) { glViewport(0, 0, w, h); CHECK_GL_ERROR(); }); CHECK_GL_ERROR();
     return true;
 }
 
